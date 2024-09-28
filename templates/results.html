@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>单因素方差分析(One-way ANOVA) - 结果</title>
+  </head>
+  <body>
+    <h1>分析结果</h1>
+    <ul>
+      {% for key, value in results.items() %}
+        <li>{{ key }}: {{ value }}</li>
+      {% endfor %}
+    </ul>
+    <a href="{{ url_for('anova') }}">上传另一个文件</a>
+  </body>
+</html>

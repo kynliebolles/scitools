@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>UCRM 计算结果</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+      h1 { color: #333; }
+      ul { list-style-type: none; padding: 0; }
+      li { margin-bottom: 10px; }
+    </style>
+  </head>
+  <body>
+    <h1>UCRM 计算结果</h1>
+    <ul>
+      <li>表征不确定性 (u_char): {{ results.u_char|round(4) }}</li>
+      <li>瓶间不确定性 (u_bb): {{ results.u_bb|round(4) }}</li>
+      <li>长期稳定性不确定性 (u_lts): {{ results.u_lts|round(4) }}</li>
+      <li>UCRM: {{ results.UCRM|round(4) }}</li>
+      <li>总体平均值: {{ results.overall_mean|round(4) }}</li>
+    </ul>
+    <a href="{{ url_for('ucrm') }}">上传另一个文件</a>
+  </body>
+</html>

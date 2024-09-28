@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>SciTools.Cloud - 科研计算工具</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+      h1 { color: #333; }
+      ul { list-style-type: none; padding: 0; }
+      li { margin-bottom: 10px; }
+      a { color: #007bff; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <h1>欢迎来到 SciTools.Cloud</h1>
+    <p>这是一个提供各种科研计算工具的网站。目前支持以下程序：</p>
+    <ul>
+      <li><a href="{{ url_for('anova') }}">计算单因素方差分析(One-way ANOVA)相关的统计量</a></li>
+      <li><a href="{{ url_for('ucrm') }}">计算 UCRM (不确定度)</a></li>
+    </ul>
+  </body>
+</html>
