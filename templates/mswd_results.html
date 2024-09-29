@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>MSWD 计算结果</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+      h1 { color: #333; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+      th { background-color: #f2f2f2; }
+    </style>
+  </head>
+  <body>
+    <h1>MSWD 计算结果</h1>
+    <table>
+      <tr>
+        <th>组</th>
+        <th>加权均值</th>
+        <th>MSWD</th>
+      </tr>
+      {% for result in results %}
+      <tr>
+        <td>{{ result.group }}</td>
+        <td>{{ result.weighted_mean|round(6) }}</td>
+        <td>{{ result.mswd|round(6) }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <a href="{{ url_for('mswd') }}">上传另一个文件</a>
+  </body>
+</html>

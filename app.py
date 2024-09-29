@@ -4,6 +4,8 @@ import numpy as np
 import chardet
 from scipy import stats  # 确保正确导入 scipy.stats
 from ucrm import calculate_ucrm
+from mswd import calculate_mswd
+from H_index import calculate_h_index
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -30,7 +32,7 @@ def calculate_statistics(matrix):
     # 计算单元内方差 M_within (对应Q2)
     M_within = np.sum((matrix - row_means[:, np.newaxis])**2) / (N - m)
     
-    # 计算F统计量
+    # 计F统计量
     F_statistic = M_between / M_within
     
     # 计算自由度
@@ -138,6 +140,110 @@ def ucrm():
                 flash(f'计算 UCRM 时发生错误：{str(e)}')
                 return redirect(request.url)
     return render_template('ucrm_upload.html')
+
+@app.route('/mswd', methods=['GET', 'POST'])
+def mswd():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('没有文件部分')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('没有选择文件')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            if file.content_length > 100 * 1024:  # 100 KB limit
+                flash('文件大小超过100 KB限制')
+                return redirect(request.url)
+            
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filepath)
+            
+            # 检测文件编码
+            with open(filepath, 'rb') as f:
+                result = chardet.detect(f.read())
+                encoding = result['encoding']
+            
+            # 读取文件数据
+            data = {}
+            required_keys = ['VALUE1', 'VALUE2', 'VALUE3', 'VALUE4', '2SE1', '2SE2', '2SE3', '2SE4']
+            with open(filepath, 'r', encoding=encoding) as f:
+                for line in f:
+                    parts = line.strip().split('\t')
+                    if len(parts) < 2:
+                        continue
+                    key = parts[0]
+                    values = [float(x) for x in parts[1:] if x]
+                    data[key] = np.array(values)
+            
+            # 验证所有必需的键是否存在
+            missing_keys = [key for key in required_keys if key not in data]
+            if missing_keys:
+                flash(f'文件缺少以下必需的列：{", ".join(missing_keys)}')
+                return redirect(request.url)
+            
+            # 准备数据
+            values = [data[f'VALUE{i}'] for i in range(1, 5)]
+            errors_2se = [data[f'2SE{i}'] for i in range(1, 5)]
+            
+            # 计算 MSWD
+            try:
+                results = calculate_mswd(values, errors_2se)
+                return render_template('mswd_results.html', results=results)
+            except Exception as e:
+                flash(f'计算 MSWD 时发生错误：{str(e)}')
+                return redirect(request.url)
+    return render_template('mswd_upload.html')
+
+@app.route('/h_index', methods=['GET', 'POST'])
+def h_index():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('没有文件部分')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('没有选择文件')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            if file.content_length > 100 * 1024:  # 100 KB limit
+                flash('文件大小超过100 KB限制')
+                return redirect(request.url)
+            
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filepath)
+            
+            # 检测文件编码
+            with open(filepath, 'rb') as f:
+                result = chardet.detect(f.read())
+                encoding = result['encoding']
+            
+            # 读取文件数据
+            data = {}
+            required_keys = ['VALUE1', 'VALUE2', 'VALUE3', 'VALUE4', '2SE1', '2SE2', '2SE3', '2SE4']
+            with open(filepath, 'r', encoding=encoding) as f:
+                for line in f:
+                    parts = line.strip().split('\t')
+                    if len(parts) < 2:
+                        continue
+                    key = parts[0]
+                    values = [float(x) for x in parts[1:] if x]
+                    data[key] = np.array(values)
+            
+            # 验证所有必需的键是否存在
+            missing_keys = [key for key in required_keys if key not in data]
+            if missing_keys:
+                flash(f'文件缺少以下必需的列：{", ".join(missing_keys)}')
+                return redirect(request.url)
+            
+            # 计算H指数
+            try:
+                h_index, mean_h_index = calculate_h_index(data)
+                return render_template('h_index_results.html', h_index=h_index, mean_h_index=mean_h_index, enumerate=enumerate)
+            except Exception as e:
+                flash(f'计算H指数时发生错误：{str(e)}')
+                return redirect(request.url)
+    return render_template('h_index_upload.html')
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>MSWD 计算 - 上传文件</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+      h1 { color: #333; }
+      .instructions { background-color: #f0f0f0; padding: 15px; border-radius: 5px; }
+      form { margin-top: 20px; }
+      input[type="file"] { margin-right: 10px; }
+      .messages { color: #d9534f; }
+    </style>
+  </head>
+  <body>
+    <h1>上传文件计算 MSWD</h1>
+    <div class="instructions">
+      <h2>使用说明</h2>
+      <ol>
+        <li>准备一个包含数据的.txt文件。文件中的数据应该是制表符分隔的格式。</li>
+        <li>文件应包含 VALUE1, VALUE2, VALUE3, VALUE4 和 2SE1, 2SE2, 2SE3, 2SE4 的数据。</li>
+        <li>文件大小不应超过100 KB。</li>
+        <li>点击"选择文件"按钮,选择您准备好的.txt文件。</li>
+        <li>点击"上传"按钮提交文件。</li>
+        <li>系统将自动分析您的数据,并在新页面显示结果。</li>
+      </ol>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".txt">
+      <input type="submit" value="上传">
+    </form>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </body>
+</html>
